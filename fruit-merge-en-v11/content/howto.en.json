@@ -1,0 +1,18 @@
+[
+  {
+    "name": "Choose where to drop the fruit",
+    "text": "Move the fruit above the container and position it where you want it to fall."
+  },
+  {
+    "name": "Drop the fruit",
+    "text": "Click on desktop or tap on mobile to release it. On mobile, you can also drag to aim and release to drop."
+  },
+  {
+    "name": "Merge matching fruit",
+    "text": "When two identical fruits touch, they automatically combine into a bigger fruit."
+  },
+  {
+    "name": "Keep space below the top",
+    "text": "Continue merging while preventing fruit from stacking too high in the container."
+  }
+]

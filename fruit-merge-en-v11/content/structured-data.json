@@ -1,0 +1,107 @@
+[
+  {
+    "@context": "https://schema.org",
+    "@type": "FAQPage",
+    "mainEntity": [
+      {
+        "@type": "Question",
+        "name": "Is Fruit Merge Game free?",
+        "acceptedAnswer": {
+          "@type": "Answer",
+          "text": "Yes. You can play Fruit Merge Game online for free directly in your browser."
+        }
+      },
+      {
+        "@type": "Question",
+        "name": "Do I need to download Fruit Merge Game?",
+        "acceptedAnswer": {
+          "@type": "Answer",
+          "text": "No. Fruit Merge Game runs in your browser, so you do not need to download or install an app."
+        }
+      },
+      {
+        "@type": "Question",
+        "name": "Can I play Fruit Merge Game on mobile?",
+        "acceptedAnswer": {
+          "@type": "Answer",
+          "text": "Yes. Fruit Merge Game works on supported phones, tablets, laptops, and desktop computers."
+        }
+      },
+      {
+        "@type": "Question",
+        "name": "How do you merge fruit?",
+        "acceptedAnswer": {
+          "@type": "Answer",
+          "text": "Drop two matching fruits close together. When identical fruits touch, they automatically merge into a bigger fruit."
+        }
+      },
+      {
+        "@type": "Question",
+        "name": "How do you get a high score in Fruit Merge Game?",
+        "acceptedAnswer": {
+          "@type": "Answer",
+          "text": "Keep matching fruit close together, build large fruit near the bottom, protect open space, and look for opportunities to create chain reactions."
+        }
+      },
+      {
+        "@type": "Question",
+        "name": "What is the biggest fruit in Fruit Merge Game?",
+        "acceptedAnswer": {
+          "@type": "Answer",
+          "text": "Watermelon is one of the largest fruits in this version of Fruit Merge Game. You can create it through its merge route; it can also appear as a direct drop. Keep enough space on the board for it."
+        }
+      },
+      {
+        "@type": "Question",
+        "name": "Is Fruit Merge Game the same as a watermelon game?",
+        "acceptedAnswer": {
+          "@type": "Answer",
+          "text": "Fruit Merge Game and watermelon games use a similar drop-and-merge mechanic, but the fruit order, physics, scoring, and progression can vary between games. Our separate Watermelon Game is coming soon."
+        }
+      },
+      {
+        "@type": "Question",
+        "name": "Is Fruit Merge Game the same as Suika Game?",
+        "acceptedAnswer": {
+          "@type": "Answer",
+          "text": "Fruit Merge Game uses the same general idea of dropping and combining matching fruit found in Suika-style games, but the fruit, physics, scoring, and rules may be different. Our separate Suika-style game is coming soon."
+        }
+      },
+      {
+        "@type": "Question",
+        "name": "Can I play Fruit Merge Game without signing up?",
+        "acceptedAnswer": {
+          "@type": "Answer",
+          "text": "Yes. You can start playing Fruit Merge Game without creating an account or signing up."
+        }
+      }
+    ]
+  },
+  {
+    "@context": "https://schema.org",
+    "@type": "HowTo",
+    "name": "How to Play Fruit Merge Game",
+    "step": [
+      {
+        "@type": "HowToStep",
+        "name": "Choose where to drop the fruit",
+        "text": "Move the fruit above the container and position it where you want it to fall."
+      },
+      {
+        "@type": "HowToStep",
+        "name": "Drop the fruit",
+        "text": "Click on desktop or tap on mobile to release it. On mobile, you can also drag to aim and release to drop."
+      },
+      {
+        "@type": "HowToStep",
+        "name": "Merge matching fruit",
+        "text": "When two identical fruits touch, they automatically combine into a bigger fruit."
+      },
+      {
+        "@type": "HowToStep",
+        "name": "Keep space below the top",
+        "text": "Continue merging while preventing fruit from stacking too high in the container."
+      }
+    ]
+  }
+]

@@ -1,0 +1,18 @@
+[
+  {
+    "name": "Share creates a native image suitable for long-press saving",
+    "passed": true
+  },
+  {
+    "name": "Copy link remains available independently",
+    "passed": true
+  },
+  {
+    "name": "Closing share restores the run and reopening updates its snapshot",
+    "passed": true
+  },
+  {
+    "name": "Share controls precede the native image and removed actions are absent",
+    "passed": true
+  }
+]

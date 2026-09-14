@@ -1,0 +1,38 @@
+[
+  {
+    "name": "Audio waits for a user unlock before creating a context",
+    "passed": true
+  },
+  {
+    "name": "User unlock schedules original melody and finite envelopes",
+    "passed": true
+  },
+  {
+    "name": "Repeated audio unlock does not duplicate music scheduler",
+    "passed": true
+  },
+  {
+    "name": "Music off leaves sound effects available",
+    "passed": true
+  },
+  {
+    "name": "Sound off mutes effects independently",
+    "passed": true
+  },
+  {
+    "name": "Pause stops scheduling and resume restores only enabled music",
+    "passed": true
+  },
+  {
+    "name": "Social destinations encode the actual score and canonical HTTPS URL",
+    "passed": true
+  },
+  {
+    "name": "Fruit expressions include grumpy, teary, blinking and impact states",
+    "passed": true
+  },
+  {
+    "name": "Ranking names and score rows live outside home document",
+    "passed": true
+  }
+]

@@ -1,0 +1,266 @@
+[
+  {
+    "name": "25 unique fruit types, required fruits, small mangosteen",
+    "passed": true
+  },
+  {
+    "name": "Same-fruit contact merges once and upgrades",
+    "passed": true
+  },
+  {
+    "name": "Different fruits collide without merging",
+    "passed": true
+  },
+  {
+    "name": "All 25 fruit types merge; terminal pairs become juice",
+    "passed": true
+  },
+  {
+    "name": "Triple contact never consumes a fruit twice",
+    "passed": true
+  },
+  {
+    "name": "Mass scales with area; large fruit pushes small fruit",
+    "passed": true
+  },
+  {
+    "name": "Ground friction converts translation to visible rotation",
+    "passed": true
+  },
+  {
+    "name": "Fruit accelerates under gravity and settles at floor",
+    "passed": true
+  },
+  {
+    "name": "Juice is collected only after falling, gutter and outlet travel",
+    "passed": true
+  },
+  {
+    "name": "Cup colour mixes by fruit juice volume",
+    "passed": true
+  },
+  {
+    "name": "Juice boost doubles the next three merges and consumes one charge",
+    "passed": true
+  },
+  {
+    "name": "Hammer targets exactly one fruit; empty click costs nothing",
+    "passed": true
+  },
+  {
+    "name": "Bomb clears radius targets and preserves distant fruit",
+    "passed": true
+  },
+  {
+    "name": "No-charge tools, tool cancel, paused actions",
+    "passed": true
+  },
+  {
+    "name": "Timed pressure still drops fruit while targeting a tool",
+    "passed": true
+  },
+  {
+    "name": "Difficulty increases, medium fruits drop, bucket width stays fixed",
+    "passed": true
+  },
+  {
+    "name": "Danger line ends supported high stack after grace period",
+    "passed": true
+  },
+  {
+    "name": "Restart resets score, liquid, pressure, bodies, tools and effects",
+    "passed": true
+  },
+  {
+    "name": "Long seeded simulation remains finite and within bucket",
+    "passed": true
+  },
+  {
+    "name": "Container side wall is one third taller with the requested narrower width",
+    "passed": true
+  },
+  {
+    "name": "Large drop probability stays at 39 percent at all difficulty levels",
+    "passed": true
+  },
+  {
+    "name": "Fruit rolls downhill on the visible slope without a flat shelf",
+    "passed": true
+  },
+  {
+    "name": "Sixty merges never refill the three single-use tools",
+    "passed": true
+  },
+  {
+    "name": "No automatic drops before the player starts",
+    "passed": true
+  },
+  {
+    "name": "Large fruits shrink by one third and all routes still grow",
+    "passed": true
+  },
+  {
+    "name": "Automatic pressure starts at 15 seconds and never faster than 6",
+    "passed": true
+  },
+  {
+    "name": "Removed fruits never drop or appear as a merge result",
+    "passed": true
+  },
+  {
+    "name": "Bowl width is exactly seven eighths of the previous version",
+    "passed": true
+  },
+  {
+    "name": "Rankings use highest score first, not juice or insertion order",
+    "passed": true
+  },
+  {
+    "name": "Finished results persist after reloading the store",
+    "passed": true
+  },
+  {
+    "name": "A run cannot be saved twice",
+    "passed": true
+  },
+  {
+    "name": "The fifteen highest results are retained",
+    "passed": true
+  },
+  {
+    "name": "Invalid stored results are ignored and names are bounded",
+    "passed": true
+  },
+  {
+    "name": "Blocked storage retains session results and reports the limitation",
+    "passed": true
+  },
+  {
+    "name": "Survival time formatting handles minutes and hours",
+    "passed": true
+  },
+  {
+    "name": "Old volume and time records are not interpreted as scores",
+    "passed": true
+  },
+  {
+    "name": "One name keeps only its highest score, including case variants",
+    "passed": true
+  },
+  {
+    "name": "Legacy duplicate names collapse on load",
+    "passed": true
+  },
+  {
+    "name": "Live scores update a single name without lowering historical best",
+    "passed": true
+  },
+  {
+    "name": "Canvas renderer draws game and 25-fruit guide without API errors",
+    "passed": true
+  },
+  {
+    "name": "Pointer coordinate mapping drops at clicked location",
+    "passed": true
+  },
+  {
+    "name": "Boost button activates real effect and pressed/disabled state",
+    "passed": true
+  },
+  {
+    "name": "Hammer button then canvas click removes target and updates count",
+    "passed": true
+  },
+  {
+    "name": "Bomb button then canvas click clears area and produces juice",
+    "passed": true
+  },
+  {
+    "name": "Pause overlay stops simulation and resume restores play",
+    "passed": true
+  },
+  {
+    "name": "Keyboard aims, drops, selects and cancels tools",
+    "passed": true
+  },
+  {
+    "name": "Restart button clears score, particles, tools and overlay UI",
+    "passed": true
+  },
+  {
+    "name": "Fruit guide pauses play and closes without stale pause state",
+    "passed": true
+  },
+  {
+    "name": "Run timer starts on first drop, not while waiting",
+    "passed": true
+  },
+  {
+    "name": "Paused duration and time in guide are excluded from the run",
+    "passed": true
+  },
+  {
+    "name": "Touch waits for release and drops at the final aim position",
+    "passed": true
+  },
+  {
+    "name": "A finished run enters the ranking exactly once and survives restart",
+    "passed": true
+  },
+  {
+    "name": "Restarting an unfinished run never adds a ranking",
+    "passed": true
+  },
+  {
+    "name": "Typing a name does not trigger gameplay shortcuts",
+    "passed": true
+  },
+  {
+    "name": "Last flowing drops are collected before a completed run is ranked",
+    "passed": true
+  },
+  {
+    "name": "Restart during final drainage preserves the full finished juice result",
+    "passed": true
+  },
+  {
+    "name": "Name remains editable during a run and after pausing",
+    "passed": true
+  },
+  {
+    "name": "The latest name is used at settlement, without renaming historical results",
+    "passed": true
+  },
+  {
+    "name": "A name changed while the last drops drain is used for that result",
+    "passed": true
+  },
+  {
+    "name": "Blank current name safely becomes You in a finished result",
+    "passed": true
+  },
+  {
+    "name": "Music and sound toggles are independent and saved",
+    "passed": true
+  },
+  {
+    "name": "Live ranking loads in its own iframe document",
+    "passed": true
+  },
+  {
+    "name": "Settings pauses gameplay and restores state on close",
+    "passed": true
+  },
+  {
+    "name": "Restart from settings closes menu and restarts the run",
+    "passed": true
+  },
+  {
+    "name": "Opening the guide from settings preserves playable resume state",
+    "passed": true
+  },
+  {
+    "name": "Fullscreen uses expanded layout when the browser API is absent",
+    "passed": true
+  }
+]
