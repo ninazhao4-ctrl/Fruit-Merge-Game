@@ -21,29 +21,5 @@
 .game-shell:fullscreen,.game-shell.expanded-game{position:fixed;inset:0;z-index:30;width:100vw;height:100dvh;max-width:none;background:linear-gradient(130deg,#ffd338,#ffac23);overflow:auto;display:flex;flex-direction:column;align-items:center;padding:8px 12px}.game-shell:fullscreen .game-meta,.game-shell.expanded-game .game-meta{display:none!important}.game-shell:fullscreen .game-topline,.game-shell.expanded-game .game-topline{position:static;width:min(1050px,100%);flex-shrink:0;margin:0 0 10px;padding:0;background:none}.game-shell:fullscreen .layout,.game-shell.expanded-game .layout{margin:0;width:min(100%,calc((100dvh - 100px)*760/843))}.game-shell:fullscreen .game-column,.game-shell.expanded-game .game-column{display:block;border:0;box-shadow:none}.game-shell:fullscreen .game,.game-shell.expanded-game .game{width:100%}.game-shell:fullscreen .player-controls,.game-shell.expanded-game .player-controls,.game-shell:fullscreen .game-caption,.game-shell.expanded-game .game-caption{display:none}.game-shell:fullscreen .top-score,.game-shell.expanded-game .top-score{gap:8px}@media(max-width:600px){.game-shell:fullscreen,.game-shell.expanded-game{padding:7px}.game-shell:fullscreen .game-topline,.game-shell.expanded-game .game-topline{gap:6px}.game-shell:fullscreen .layout,.game-shell.expanded-game .layout{width:min(100%,calc((100dvh - 126px)*760/843))}}
 /* Consistent share, speaker-action and expand/collapse icons. */
 .round-control .action-icon,.action-icon{fill:none;stroke:currentColor;stroke-width:2.8;stroke-linecap:round;stroke-linejoin:round}.round-control .speaker-icon{fill:none;stroke:currentColor;stroke-width:2.8;stroke-linecap:round;stroke-linejoin:round}.speaker-icon .speaker-body{fill:currentColor;stroke:none}.speaker-icon .speaker-detail{fill:none}#music::after,#sound::after{display:none!important}#overlayShare{display:flex;align-items:center;justify-content:center;gap:9px}#overlayShare .action-icon{width:24px;height:24px;flex-shrink:0}
-/* Fit the entire desktop game into the first viewport without changing physics. */
-@media(min-width:601px){
- .app{max-width:1220px;padding:12px 20px}
- .topbar{margin:0 0 8px}.brand{font-size:28px;line-height:34px}
- .game-shell:not(.expanded-game){--board-height:max(260px,calc(100dvh - 200px));max-width:calc(var(--board-height)*760/843 + 206px);margin:0 auto}
- .game-shell:not(.expanded-game) .game-topline{margin:0 0 10px;gap:10px}
- .game-shell:not(.expanded-game) .layout{margin-top:0}
- .game-shell:not(.expanded-game) .game-column{grid-template-columns:200px minmax(0,1fr);border-radius:20px}
- .game-shell:not(.expanded-game) .game{min-width:0;align-self:start}
- .game-shell:not(.expanded-game) .game-meta{padding:10px 8px;gap:8px;overflow:hidden;min-height:0;height:100%}
- .game-shell:not(.expanded-game) .name-card label{font-size:13px;margin-bottom:4px}
- .game-shell:not(.expanded-game) .name-card input{min-height:36px;height:36px;padding:6px 9px;font-size:14px}
- .game-shell:not(.expanded-game) #scoresFrame{height:0;min-height:0;flex:1;margin:0}
- .game-shell:not(.expanded-game) .player-controls{padding:5px 12px;min-height:25px}
- .game-shell:not(.expanded-game) .mini-stats{font-size:11px}
- .game-shell:not(.expanded-game) .game-caption{padding:4px 10px;min-height:24px;font-size:11px}
- .game-shell:not(.expanded-game) .hud-score,.game-shell:not(.expanded-game) .hud-time{padding:6px 12px;font-size:11px}
- .game-shell:not(.expanded-game) .top-score b{font-size:23px}
- .game-shell:not(.expanded-game) .round-control{width:40px;height:40px;padding:6px;font-size:26px}
- .game-shell:not(.expanded-game) .round-control svg{width:25px;height:25px}
- .game-shell:not(.expanded-game) .tools{top:12%;gap:10px}
- .game-shell:not(.expanded-game) .tool{height:auto;min-height:0;aspect-ratio:1/1.15;border-width:2px;border-radius:12px;gap:2px;padding:4px 1px}
- .game-shell:not(.expanded-game) .tool svg{width:38%;height:auto;max-height:35px}
- .game-shell:not(.expanded-game) .tool b{font-size:clamp(8px,1vw,11px);white-space:normal}
- .game-shell:not(.expanded-game) .tool span{font-size:10px;padding:1px 5px}
-}
+
+.ui-title{font-size:26px;line-height:1.25;font-weight:900;margin:12px 0}.dialog-card .ui-title{font-size:30px;margin:17px 0}.guide-header .ui-title,.share-heading .ui-title{font-size:26px;margin:12px 0}.hero-intro{max-width:900px;margin:0 0 18px}
