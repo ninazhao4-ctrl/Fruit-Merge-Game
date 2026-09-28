@@ -24,36 +24,19 @@
 /* Desktop one-screen game layout */
 @media (min-width:851px){
   .game-shell{
-    width:min(100%,54svh);
-    margin-inline:auto;
+    /* Desktop: fit the complete game within the viewport while preserving its ratio. */
+@media (min-width:851px) {
+  .game-shell {
+    width: min(100%, calc(210px + (100svh - 300px) * 1.30486)) !important;
+    max-width: none !important;
+    margin-inline: auto;
   }
 
-  .game-column{
-    grid-template-columns:clamp(120px,22%,170px) minmax(0,1fr);
+  .game {
+    aspect-ratio: 1100 / 843;
   }
 
-  .game-shell .game-meta{
-    overflow:hidden;
-    padding:12px 8px;
-  }
-
-  .game-shell #scoresFrame{
-    height:auto;
-    min-height:0;
-  }
-
-  .game-shell .tool{
-    height:clamp(72px,9svh,100px);
-    min-height:72px;
-    gap:3px;
-  }
-
-  .game-shell .tool svg{
-    width:32px;
-    height:32px;
-  }
-
-  .game-shell .tools{
-    gap:12px;
+  .game-column {
+    grid-template-columns: 210px minmax(0, 1fr);
   }
 }
