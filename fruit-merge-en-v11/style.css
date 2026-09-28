@@ -24,7 +24,7 @@
 /* Desktop one-screen game layout */
 @media (min-width:851px){
   .game-shell{
-    width:min(100%,68svh);
+    width:min(100%,54svh);
     margin-inline:auto;
   }
 
