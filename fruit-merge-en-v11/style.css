@@ -21,3 +21,12 @@
 .game-shell:fullscreen,.game-shell.expanded-game{position:fixed;inset:0;z-index:30;width:100vw;height:100dvh;max-width:none;background:linear-gradient(130deg,#ffd338,#ffac23);overflow:auto;display:flex;flex-direction:column;align-items:center;padding:8px 12px}.game-shell:fullscreen .game-meta,.game-shell.expanded-game .game-meta{display:none!important}.game-shell:fullscreen .game-topline,.game-shell.expanded-game .game-topline{position:static;width:min(1050px,100%);flex-shrink:0;margin:0 0 10px;padding:0;background:none}.game-shell:fullscreen .layout,.game-shell.expanded-game .layout{margin:0;width:min(100%,calc((100dvh - 100px)*760/843))}.game-shell:fullscreen .game-column,.game-shell.expanded-game .game-column{display:block;border:0;box-shadow:none}.game-shell:fullscreen .game,.game-shell.expanded-game .game{width:100%}.game-shell:fullscreen .player-controls,.game-shell.expanded-game .player-controls,.game-shell:fullscreen .game-caption,.game-shell.expanded-game .game-caption{display:none}.game-shell:fullscreen .top-score,.game-shell.expanded-game .top-score{gap:8px}@media(max-width:600px){.game-shell:fullscreen,.game-shell.expanded-game{padding:7px}.game-shell:fullscreen .game-topline,.game-shell.expanded-game .game-topline{gap:6px}.game-shell:fullscreen .layout,.game-shell.expanded-game .layout{width:min(100%,calc((100dvh - 126px)*760/843))}}
 /* Consistent share, speaker-action and expand/collapse icons. */
 .round-control .action-icon,.action-icon{fill:none;stroke:currentColor;stroke-width:2.8;stroke-linecap:round;stroke-linejoin:round}.round-control .speaker-icon{fill:none;stroke:currentColor;stroke-width:2.8;stroke-linecap:round;stroke-linejoin:round}.speaker-icon .speaker-body{fill:currentColor;stroke:none}.speaker-icon .speaker-detail{fill:none}#music::after,#sound::after{display:none!important}#overlayShare{display:flex;align-items:center;justify-content:center;gap:9px}#overlayShare .action-icon{width:24px;height:24px;flex-shrink:0}
+/* Desktop viewport fit: presentation only. /
+@media (min-width:851px) and (min-height:700px){
+.game-shell{
+width:min(100%,calc(90.154svh - 24.4px));
+margin-inline:auto;
+}
+.game-shell .game-meta{overflow:hidden}
+.game-shell #scoresFrame{height:auto;min-height:0}
+}
