@@ -2,7 +2,8 @@
 (function(root){
 'use strict';
 const URL_HOME='https://fruitmergegame.net/';
-function socialLinks(score){const text=`I scored ${Math.max(0,Math.floor(score)).toLocaleString('en-US')} points in Fruit Merge Game! Can you beat my score?`;return {text,url:URL_HOME,x:'https://twitter.com/intent/tweet?text='+encodeURIComponent(text)+'&url='+encodeURIComponent(URL_HOME),facebook:'https://www.facebook.com/sharer/sharer.php?u='+encodeURIComponent(URL_HOME),whatsapp:'https://wa.me/?text='+encodeURIComponent(text+' '+URL_HOME)}}
+const PIN_IMAGE='https://fruitmergegame.net/assets/share.png';
+function socialLinks(score){const text=`I scored ${Math.max(0,Math.floor(score)).toLocaleString('en-US')} points in Fruit Merge Game! Can you beat my score?`;return {text,url:URL_HOME,x:'https://twitter.com/intent/tweet?text='+encodeURIComponent(text)+'&url='+encodeURIComponent(URL_HOME),facebook:'https://www.facebook.com/sharer/sharer.php?u='+encodeURIComponent(URL_HOME),whatsapp:'https://wa.me/?text='+encodeURIComponent(text+' '+URL_HOME),pinterest:'https://www.pinterest.com/pin/create/button/?url='+encodeURIComponent(URL_HOME)+'&media='+encodeURIComponent(PIN_IMAGE)+'&description='+encodeURIComponent(text)}}
 function loadImage(src){return new Promise((resolve,reject)=>{const i=new root.Image();i.onload=()=>resolve(i);i.onerror=()=>reject(new Error('Image could not load'));i.src=src})}
 function drawCard(c,bg,qr,run){
  c.clearRect(0,0,1200,1200);c.drawImage(bg,0,0,1200,1200);
@@ -20,7 +21,7 @@ class FruitShare{
 
  }
  status(value){this.$('shareStatus').textContent=value}
- async open(){const $=this.$;if(!$('shareDialog').open){this.restore=this.onOpen();$('shareDialog').showModal()}this.snapshot={...this.getRun()};const version=++this.generation;this.blob=null;$('shareImage').hidden=true;this.status('Creating your share image…');$('shareURL').value=URL_HOME;const links=socialLinks(this.snapshot.score);for(const name of ['x','facebook','whatsapp'])$('share-'+name).href=links[name];
+ async open(){const $=this.$;if(!$('shareDialog').open){this.restore=this.onOpen();$('shareDialog').showModal()}this.snapshot={...this.getRun()};const version=++this.generation;this.blob=null;$('shareImage').hidden=true;this.status('Creating your share image…');$('shareURL').value=URL_HOME;const links=socialLinks(this.snapshot.score);for(const name of ['x','facebook','whatsapp','pinterest'])$('share-'+name).href=links[name];
   try{if(!this.assets)this.assets=Promise.all([loadImage('assets/share-template.png'),loadImage('assets/qr.png')]).catch(e=>{this.assets=null;throw e});const [bg,qr]=await this.assets;if(version!==this.generation)return;const canvas=$('shareCanvas');drawCard(canvas.getContext('2d'),bg,qr,this.snapshot);const blob=await new Promise(resolve=>canvas.toBlob(resolve,'image/png'));if(version!==this.generation)return;if(!blob)throw Error('No image');if(this.objectURL)URL.revokeObjectURL(this.objectURL);this.blob=blob;this.objectURL=URL.createObjectURL(blob);$('shareImage').src=this.objectURL;$('shareImage').hidden=false;this.status('')}catch(_){this.status('Image unavailable. You can still copy or share the game link.')}
  }
 }
