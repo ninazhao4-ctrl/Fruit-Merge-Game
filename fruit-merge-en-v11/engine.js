@@ -3,11 +3,11 @@
 'use strict';
 const {FRUITS}=root.FruitArt;
 const clamp=(v,a,b)=>Math.max(a,Math.min(b,v));
-const BOUNDS=Object.freeze({left:89.375,right:584.625,floor:650,floorEdge:584,line:151,spawnY:103});
+const BOUNDS=Object.freeze({left:89.375,right:924.625,center:507,floor:650,floorEdge:584,line:151,spawnY:103});
 function rgb(hex){return [1,3,5].map(i=>parseInt(hex.slice(i,i+2),16))}
 class FruitEngine{
  constructor({random=Math.random,onEvent=()=>{}}={}){this.random=random;this.onEvent=onEvent;this.reset()}
- reset(){this.bodies=[];this.drops=[];this.effects=[];this.time=0;this.runTime=0;this.started=false;this.score=0;this.merges=0;this.dropCount=0;this.ml=0;this.mix=[255,188,68];this.nextId=1;this.cooldown=0;this.autoClock=0;this.danger=0;this.ended=false;this.paused=false;this.selection=null;this.charges={boost:1,hammer:1,bomb:1};this.boostLeft=0;this.aim=337;this.current=this.pick();this.next=this.pick();this.events={merge:0,collected:0,hammer:0,bomb:0,boost:0};this.onEvent('reset',{})}
+ reset(){this.bodies=[];this.drops=[];this.effects=[];this.time=0;this.runTime=0;this.started=false;this.score=0;this.merges=0;this.dropCount=0;this.ml=0;this.mix=[255,188,68];this.nextId=1;this.cooldown=0;this.autoClock=0;this.danger=0;this.ended=false;this.paused=false;this.selection=null;this.charges={boost:1,hammer:1,bomb:1};this.boostLeft=0;this.aim=BOUNDS.center;this.current=this.pick();this.next=this.pick();this.events={merge:0,collected:0,hammer:0,bomb:0,boost:0};this.onEvent('reset',{})}
  get level(){return Math.min(12,1+Math.floor((this.merges+this.dropCount/3)/10))}
  get interval(){return Math.max(6,15-(this.level-1)*.65)}
  pick(){const t=this.random();const weights=[.06,.12,.19,.24,.165,.1275,.075,.0225];let tier=0,sum=0;for(let i=0;i<weights.length;i++){sum+=weights[i];if(t<sum){tier=i;break}}const pool=FRUITS.filter(f=>f.tier===tier);return pool[Math.floor(this.random()*pool.length)].id}
@@ -49,7 +49,7 @@ class FruitEngine{
   const slope=(BOUNDS.floor-BOUNDS.floorEdge)/((BOUNDS.right-BOUNDS.left)/2),norm=Math.hypot(1,slope);
   for(const direction of [-1,1]){
    const nx=direction*slope/norm,ny=-1/norm;
-   const distance=(BOUNDS.floor-b.y+direction*slope*(b.x-337))/norm;
+   const distance=(BOUNDS.floor-b.y+direction*slope*(b.x-BOUNDS.center))/norm;
    if(distance>=b.r)continue;
    const depth=b.r-distance;b.x+=nx*depth;b.y+=ny*depth;
    const vn=b.vx*nx+b.vy*ny;let j=0;
@@ -62,11 +62,11 @@ class FruitEngine{
  }
  stepJuice(dt){
   for(const p of this.drops){p.age+=dt;if(p.stage===0){p.vy+=1100*dt;p.x+=p.vx*dt;p.y+=p.vy*dt;if(p.x<BOUNDS.left+5){p.x=BOUNDS.left+5;p.vx=Math.abs(p.vx)*.4}if(p.x>BOUNDS.right-5){p.x=BOUNDS.right-5;p.vx=-Math.abs(p.vx)*.4}if(p.y>=floorY(p.x)){p.y=floorY(p.x);p.stage=1}}
-   else if(p.stage===1){const center=337;const distance=center-p.x;const travel=245*dt;if(Math.abs(distance)<=travel){p.x=center;p.y=666;p.vx=(this.random()-.5)*14;p.vy=95;p.stage=2}else {p.x+=Math.sign(distance)*travel;p.y=floorY(p.x)}}
+   else if(p.stage===1){const center=BOUNDS.center;const distance=center-p.x;const travel=245*dt;if(Math.abs(distance)<=travel){p.x=center;p.y=666;p.vx=(this.random()-.5)*14;p.vy=95;p.stage=2}else {p.x+=Math.sign(distance)*travel;p.y=floorY(p.x)}}
    else if(p.stage===2){p.vy+=700*dt;p.x+=p.vx*dt;p.y+=p.vy*dt;const surface=805-Math.min(1,(this.ml%500)/500)*86;if(p.y>=surface){const total=this.ml+p.ml;this.mix=this.mix.map((v,i)=>(v*this.ml+p.color[i]*p.ml)/total);this.ml=total;p.stage=3;this.events.collected++;}}
   }this.drops=this.drops.filter(p=>p.stage!==3);
  }
 }
-function floorY(x){return BOUNDS.floor-(BOUNDS.floor-BOUNDS.floorEdge)*Math.abs(x-337)/((BOUNDS.right-BOUNDS.left)/2)}
+function floorY(x){return BOUNDS.floor-(BOUNDS.floor-BOUNDS.floorEdge)*Math.abs(x-BOUNDS.center)/((BOUNDS.right-BOUNDS.left)/2)}
 root.FruitPhysics={FruitEngine,BOUNDS,clamp,floorY};
 })(typeof window==='undefined'?globalThis:window);
