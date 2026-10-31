@@ -3,7 +3,8 @@ name: Deploy static content to Pages
 
 on:
   push:
-    branches: ["main"]
+    branches:
+      - main
   workflow_dispatch:
 
 permissions:
@@ -12,16 +13,16 @@ permissions:
   id-token: write
 
 concurrency:
-  group: "pages"
+  group: pages
   cancel-in-progress: false
 
 jobs:
   deploy:
+    runs-on: ubuntu-latest
+
     environment:
       name: github-pages
       url: ${{ steps.deployment.outputs.page_url }}
-
-    runs-on: ubuntu-latest
 
     steps:
       - name: Checkout repository
@@ -33,10 +34,10 @@ jobs:
           python-version: "3.12"
 
       - name: Build Fruit Merge Game
-        working-directory: fruit-merge-en-v11
+        working-directory: ./fruit-merge-en-v11
         run: python3 build.py
 
-      - name: Setup Pages
+      - name: Configure GitHub Pages
         uses: actions/configure-pages@v5
 
       - name: Upload website
@@ -48,4 +49,3 @@ jobs:
         id: deployment
         uses: actions/deploy-pages@v4
 
-        uses: actions/deploy-pages@v5
