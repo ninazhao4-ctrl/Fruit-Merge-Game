@@ -55,10 +55,10 @@ Copy this project to `/opt/fruitmergegame` and copy `site/` to `/var/www/fruitme
 
 ## Difficulty
 
-Drops are a little easier to match. Each size still uses the original odds, and the auto-drop timer and danger line are unchanged. Two things changed in `pick()`:
+Drops of one size repeat a bit more often than before, so pairs show up without clearing the bowl of other fruit. Each size still uses the original odds, and the auto-drop timer and danger line are unchanged. Two things changed in `pick()`:
 
-- Each size has two common fruits. About 60% of drops of that size are one of those two. The other fruits of that size still drop the rest of the time, and every fruit can still be merged.
-- If that size is already in your hand, was one of the last three drops, or is on the board, about 45% of drops of that size repeat one of those fruits.
+- If you already have a fruit of the chosen size, 63% of those drops are another copy of the one you have the most of. Pieces on the board count more than the fruit in hand or the last three drops. The other 37% can be a different fruit of that size.
+- When nothing of that size is out yet, 68% of drops are one of the two common fruits for the size. The other 32% can be any fruit of that size, so all 25 types still appear and every merge route stays reachable.
 
 # Original root-level pages from fruit-merge-en-v11
 

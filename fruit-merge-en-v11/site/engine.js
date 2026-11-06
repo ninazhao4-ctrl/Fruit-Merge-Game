@@ -5,7 +5,7 @@ const {FRUITS}=root.FruitArt;
 const clamp=(v,a,b)=>Math.max(a,Math.min(b,v));
 const BOUNDS=Object.freeze({left:89.375,right:584.625,floor:650,floorEdge:584,line:151,spawnY:103});
 function rgb(hex){return [1,3,5].map(i=>parseInt(hex.slice(i,i+2),16))}
-// Two common fruits per size. The others still drop, just less often. Every merge route stays reachable.
+// Two common fruits per size. Every other fruit can still drop, and every merge route stays reachable.
 const COMMON_DROPS={0:['Kumquat','Blueberry'],1:['Apricot','Lime'],2:['Lemon','Kiwi'],3:['Peach','Fig'],4:['Apple','Mango'],5:['Pomegranate','Papaya'],6:['Dragon Fruit','Pineapple'],7:['Watermelon','Cantaloupe']};
 class FruitEngine{
  constructor({random=Math.random,onEvent=()=>{}}={}){this.random=random;this.onEvent=onEvent;this.reset()}
@@ -16,16 +16,18 @@ class FruitEngine{
   const weights=[.06,.12,.19,.24,.165,.1275,.075,.0225];
   let tier=0,sum=0,roll=this.random();
   for(let i=0;i<weights.length;i++){sum+=weights[i];if(roll<sum){tier=i;break}}
-  const pool=FRUITS.filter(f=>f.tier===tier),seen=new Set(),familiar=[];
-  const consider=id=>{const fruit=FRUITS[id];if(!fruit||fruit.tier!==tier||seen.has(id))return;seen.add(id);familiar.push(id)};
-  for(const body of this.bodies)consider(body.type);
-  for(const id of this.recentDrops||[])consider(id);
-  if(typeof this.current==='number')consider(this.current);
-  // 45%: repeat a fruit of this size already in hand, just dropped, or on the board.
-  if(familiar.length&&this.random()<0.45)return familiar[Math.floor(this.random()*familiar.length)];
+  const pool=FRUITS.filter(f=>f.tier===tier),counts=new Map();
+  const add=(id,weight)=>{const fruit=FRUITS[id];if(!fruit||fruit.tier!==tier)return;counts.set(id,(counts.get(id)||0)+weight)};
+  for(const body of this.bodies)add(body.type,3);
+  for(const id of this.recentDrops||[])add(id,2);
+  if(typeof this.current==='number')add(this.current,2);
+  let bestId=null,best=0;
+  for(const [id,weight] of counts)if(weight>=best){best=weight;bestId=id}
+  // 63%: another copy of the same-size fruit you already have the most of. The rest stay mixed.
+  if(bestId!==null&&this.random()<0.63)return bestId;
   const names=COMMON_DROPS[tier],common=pool.filter(f=>names.includes(f.name));
-  // 60%: stay inside the two common fruits for this size. Otherwise any fruit of the size can drop.
-  const source=common.length&&common.length<pool.length&&this.random()<0.6?common:pool;
+  // 68% of a fresh roll stays on the two common fruits. The other 32% can be any fruit of this size.
+  const source=common.length&&common.length<pool.length&&this.random()<0.68?common:pool;
   return source[Math.floor(this.random()*source.length)].id
  }
  spawn(type,x,y,opts={}){const f=FRUITS[type],r=f.radius,m=r*r*f.density;const b={uid:this.nextId++,type,x:clamp(x,BOUNDS.left+r,BOUNDS.right-r),y,r,m,invM:1/m,I:.5*m*r*r,vx:0,vy:0,angle:(this.random()-.5)*.4,w:0,age:0,lock:.13,squish:0,...opts};this.bodies.push(b);return b}
