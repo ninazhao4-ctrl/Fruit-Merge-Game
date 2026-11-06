@@ -5,14 +5,33 @@ const {FRUITS}=root.FruitArt;
 const clamp=(v,a,b)=>Math.max(a,Math.min(b,v));
 const BOUNDS=Object.freeze({left:89.375,right:584.625,floor:650,floorEdge:584,line:151,spawnY:103});
 function rgb(hex){return [1,3,5].map(i=>parseInt(hex.slice(i,i+2),16))}
+// Two common fruits per size. Every other fruit can still drop, and every merge route stays reachable.
+const COMMON_DROPS={0:['Kumquat','Blueberry'],1:['Apricot','Lime'],2:['Lemon','Kiwi'],3:['Peach','Fig'],4:['Apple','Mango'],5:['Pomegranate','Papaya'],6:['Dragon Fruit','Pineapple'],7:['Watermelon','Cantaloupe']};
 class FruitEngine{
  constructor({random=Math.random,onEvent=()=>{}}={}){this.random=random;this.onEvent=onEvent;this.reset()}
- reset(){this.bodies=[];this.drops=[];this.effects=[];this.time=0;this.runTime=0;this.started=false;this.score=0;this.merges=0;this.dropCount=0;this.ml=0;this.mix=[255,188,68];this.nextId=1;this.cooldown=0;this.autoClock=0;this.danger=0;this.ended=false;this.paused=false;this.selection=null;this.charges={boost:1,hammer:1,bomb:1};this.boostLeft=0;this.aim=337;this.current=this.pick();this.next=this.pick();this.events={merge:0,collected:0,hammer:0,bomb:0,boost:0};this.onEvent('reset',{})}
+ reset(){this.bodies=[];this.drops=[];this.effects=[];this.time=0;this.runTime=0;this.started=false;this.score=0;this.merges=0;this.dropCount=0;this.ml=0;this.mix=[255,188,68];this.nextId=1;this.cooldown=0;this.autoClock=0;this.danger=0;this.ended=false;this.paused=false;this.selection=null;this.charges={boost:1,hammer:1,bomb:1};this.boostLeft=0;this.aim=337;this.recentDrops=[];this.current=this.pick();this.next=this.pick();this.events={merge:0,collected:0,hammer:0,bomb:0,boost:0};this.onEvent('reset',{})}
  get level(){return Math.min(12,1+Math.floor((this.merges+this.dropCount/3)/10))}
  get interval(){return Math.max(6,15-(this.level-1)*.65)}
- pick(){const t=this.random();const weights=[.06,.12,.19,.24,.165,.1275,.075,.0225];let tier=0,sum=0;for(let i=0;i<weights.length;i++){sum+=weights[i];if(t<sum){tier=i;break}}const pool=FRUITS.filter(f=>f.tier===tier);return pool[Math.floor(this.random()*pool.length)].id}
+ pick(){
+  const weights=[.06,.12,.19,.24,.165,.1275,.075,.0225];
+  let tier=0,sum=0,roll=this.random();
+  for(let i=0;i<weights.length;i++){sum+=weights[i];if(roll<sum){tier=i;break}}
+  const pool=FRUITS.filter(f=>f.tier===tier),counts=new Map();
+  const add=(id,weight)=>{const fruit=FRUITS[id];if(!fruit||fruit.tier!==tier)return;counts.set(id,(counts.get(id)||0)+weight)};
+  for(const body of this.bodies)add(body.type,3);
+  for(const id of this.recentDrops||[])add(id,2);
+  if(typeof this.current==='number')add(this.current,2);
+  let bestId=null,best=0;
+  for(const [id,weight] of counts)if(weight>=best){best=weight;bestId=id}
+  // 63%: another copy of the same-size fruit you already have the most of. The rest stay mixed.
+  if(bestId!==null&&this.random()<0.63)return bestId;
+  const names=COMMON_DROPS[tier],common=pool.filter(f=>names.includes(f.name));
+  // 68% of a fresh roll stays on the two common fruits. The other 32% can be any fruit of this size.
+  const source=common.length&&common.length<pool.length&&this.random()<0.68?common:pool;
+  return source[Math.floor(this.random()*source.length)].id
+ }
  spawn(type,x,y,opts={}){const f=FRUITS[type],r=f.radius,m=r*r*f.density;const b={uid:this.nextId++,type,x:clamp(x,BOUNDS.left+r,BOUNDS.right-r),y,r,m,invM:1/m,I:.5*m*r*r,vx:0,vy:0,angle:(this.random()-.5)*.4,w:0,age:0,lock:.13,squish:0,...opts};this.bodies.push(b);return b}
- drop(x=this.aim){if(this.ended||this.paused||this.cooldown>0||this.selection)return false;this.started=true;const b=this.spawn(this.current,x,BOUNDS.spawnY,{vx:(this.random()-.5)*10,w:(this.random()-.5)*.3});this.current=this.next;this.next=this.pick();this.cooldown=.48;this.autoClock=0;this.dropCount++;this.onEvent('drop',b);return b}
+ drop(x=this.aim){if(this.ended||this.paused||this.cooldown>0||this.selection)return false;this.started=true;const b=this.spawn(this.current,x,BOUNDS.spawnY,{vx:(this.random()-.5)*10,w:(this.random()-.5)*.3});this.recentDrops.push(b.type);if(this.recentDrops.length>3)this.recentDrops.shift();this.current=this.next;this.next=this.pick();this.cooldown=.48;this.autoClock=0;this.dropCount++;this.onEvent('drop',b);return b}
  select(tool){if(this.ended||this.paused)return false;if(tool==='boost'){if(this.charges.boost<=0||this.boostLeft>0)return false;this.charges.boost--;this.boostLeft=3;this.selection=null;this.events.boost++;this.onEvent('boost',{});return true}if(!['hammer','bomb'].includes(tool)||this.charges[tool]<=0)return false;this.selection=this.selection===tool?null:tool;this.onEvent('select',{tool:this.selection});return true}
  useAt(x,y){if(!this.selection||this.ended||this.paused)return false;const tool=this.selection;let targets=[];if(tool==='hammer'){const b=[...this.bodies].reverse().find(b=>Math.hypot(b.x-x,b.y-y)<=b.r+7);if(b)targets=[b]}else targets=this.bodies.filter(b=>Math.hypot(b.x-x,b.y-y)<=105+b.r*.5);if(!targets.length){this.onEvent('miss',{tool});return false}this.charges[tool]--;this.events[tool]++;this.selection=null;const ids=new Set(targets.map(b=>b.uid));this.bodies=this.bodies.filter(b=>!ids.has(b.uid));targets.forEach(b=>this.pulp(b.x,b.y,b.type,Math.round(b.r*.6)));if(tool==='bomb'){this.effects.push({kind:'blast',x,y,age:0});this.bodies.forEach(b=>{let dx=b.x-x,dy=b.y-y,d=Math.max(1,Math.hypot(dx,dy));if(d<260){const impulse=(260-d)*180; b.vx+=dx/d*impulse/b.m;b.vy+=dy/d*impulse/b.m}})}this.danger=Math.max(0,this.danger-.7);this.onEvent(tool,{count:targets.length});return true}
  pulp(x,y,type,volume){const color=rgb(FRUITS[type].juice),n=18;for(let i=0;i<n;i++){const a=this.random()*Math.PI*2,speed=70+this.random()*150;this.drops.push({x,y,vx:Math.cos(a)*speed,vy:Math.sin(a)*speed-80,r:2+this.random()*3,color,ml:volume/n,stage:0,age:0})}this.effects.push({kind:'merge',x,y,color:FRUITS[type].juice,age:0})}
