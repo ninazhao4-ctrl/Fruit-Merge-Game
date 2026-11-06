@@ -46,7 +46,7 @@ function sync(){
  $('runTime').textContent=formatTime(engine.runTime);$('liveRun').textContent=engine.score.toLocaleString();$('playerName').disabled=false;
  for(const name of ['boost','hammer','bomb']){const b=$(name);b.disabled=engine.ended||engine.paused||engine.charges[name]<=0||(name==='boost'&&engine.boostLeft>0);b.setAttribute('aria-pressed',String(name==='boost'?engine.boostLeft>0:engine.selection===name));$(name+'Count').textContent=name==='boost'&&engine.boostLeft?`${engine.boostLeft} left`:(engine.charges[name]?'1 use':'Used');}
  $('pause').textContent=engine.paused?'Continue':'Ⅱ Pause';canvas.style.cursor=engine.selection?'crosshair':'pointer';
- if(performance.now()>noticeUntil&&!engine.paused&&!engine.ended){$('message').textContent=engine.danger>.3?`Danger! Clear the top · ${(Math.max(0,engine.dangerLimit-engine.danger)).toFixed(1)}s`:(engine.selection?'Choose a target · Esc cancels':engine.started?'Match fruit. Stay below the line.':'Drop your first fruit to start the timer.')}
+ if(performance.now()>noticeUntil&&!engine.paused&&!engine.ended){$('message').textContent=engine.danger>.3?`Danger! Clear the top · ${(4-engine.danger).toFixed(1)}s`:(engine.selection?'Choose a target · Esc cancels':engine.started?'Match fruit. Stay below the line.':'Drop your first fruit to start the timer.')}
 }
 function draw(){
  c.clearRect(0,0,1100,843);const sky=c.createLinearGradient(0,0,0,843);sky.addColorStop(0,'#ffce36');sky.addColorStop(.6,'#ffa129');sky.addColorStop(1,'#ffc414');c.fillStyle=sky;c.fillRect(0,0,1100,843);
@@ -60,7 +60,7 @@ function draw(){
  path([[91.125,118],[91.125,581],[507,646],[923.75,581],[923.75,118]],'#ff7760',4);
  c.fillStyle='#ffef9420';c.beginPath();c.moveTo(92,151);c.lineTo(922,151);c.lineTo(922,582);c.lineTo(507,647);c.lineTo(92,582);c.closePath();c.fill();
  c.save();c.setLineDash([8,8]);c.strokeStyle=engine.danger>.1?'#df533f':'#ed4931';c.lineWidth=2;c.beginPath();c.moveTo(93,151);c.lineTo(920.25,151);c.stroke();c.restore();
- text(engine.danger>.1?`Danger ${(Math.max(0,engine.dangerLimit-engine.danger)).toFixed(1)}s`:'Danger',100.375,141,12,engine.danger>.1?'#ce3e2b':'#ad3d18');
+ text(engine.danger>.1?`Danger ${(4-engine.danger).toFixed(1)}s`:'Danger',100.375,141,12,engine.danger>.1?'#ce3e2b':'#ad3d18');
  if(engine.danger>.15){c.fillStyle=`rgba(240,92,56,${.035+.045*(1+Math.sin(engine.time*9))})`;c.fillRect(93,153,827.25,75)}
  // Target guide stops at the stack, rather than passing through the fruit.
  const f=FRUITS[engine.current],aim=clamp(engine.aim,BOUNDS.left+f.radius,BOUNDS.right-f.radius);

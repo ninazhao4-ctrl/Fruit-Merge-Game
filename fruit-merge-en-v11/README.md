@@ -55,7 +55,10 @@ Copy this project to `/opt/fruitmergegame` and copy `site/` to `/var/www/fruitme
 
 ## Difficulty
 
-Spawn weights, the danger grace period, and the late-game auto-drop pace are a little gentler than before. Large fruit (tier 4 and up) is 34% of drops instead of 39%. A stack across the danger line has 5.25 seconds instead of 4. Forced drops still start at 15 seconds and bottom out at 9.5 seconds instead of about 7.8. Tools, scoring, fruit art, and the page copy are unchanged.
+Drops are a little easier to match. Each size still uses the original odds, and the auto-drop timer and danger line are unchanged. Two things changed in `pick()`:
+
+- Each size has two common fruits. About 60% of drops of that size are one of those two. The other fruits of that size still drop the rest of the time, and every fruit can still be merged.
+- If that size is already in your hand, was one of the last three drops, or is on the board, about 45% of drops of that size repeat one of those fruits.
 
 # Original root-level pages from fruit-merge-en-v11
 
