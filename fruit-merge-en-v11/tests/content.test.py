@@ -30,7 +30,7 @@ for slug in ['fruit-merge-game-strategy','fruit-merge-game-unblocked']:
  assert 'href="/'+slug+'/"'in (ROOT/'site/index.html').read_text();count+=1
 for path in [ROOT/'index.html',ROOT/'site/index.html',ROOT/'Fruit-Merge-Game-English.html',*(ROOT/s/'index.html'for s in ['fruit-merge-game-strategy','fruit-merge-game-unblocked']),*(ROOT/'site'/s/'index.html'for s in ['fruit-merge-game-strategy','fruit-merge-game-unblocked'])]:
  for link in Page(path.read_text()).links:
-  if link.startswith(('data:','#','https:')):continue
+  if link.startswith(('data:','#','https:','mailto:')):continue
   target=(ROOT/'site'/link.lstrip('/'))if link.startswith('/')else path.parent/link
   if link.endswith('/'):target=target/'index.html'
   assert target.exists(),(path,link)
