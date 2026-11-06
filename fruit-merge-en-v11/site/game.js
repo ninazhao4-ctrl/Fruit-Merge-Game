@@ -16,10 +16,14 @@ for(const k of ['music','sound'])$(k).onclick=async()=>{if(k==='music'){const pl
 updateAudioUI();
 let last=performance.now(),accumulator=0,hover={x:337,y:300},noticeUntil=0,wasPaused=false,touchAim=false;
 function newRunId(){return Date.now().toString(36)+'-'+Math.random().toString(36).slice(2)}
-let rankingStamp='';
-function renderRankings(force=false){const current=engine.started&&!runSaved?{id:runId,player:cleanName($('playerName').value),score:engine.score,live:true}:null;const top=FruitRanking.topScores(rankings.records,current),stamp=JSON.stringify(top);if(!force&&stamp===rankingStamp)return;rankingStamp=stamp;const frame=$('scoresFrame');if(frame.contentWindow)frame.contentWindow.postMessage({type:'fruit-scores',records:top,persistent:rankings.persistent},'*')}
+let rankingStamp='',cloudRecords=null,cloudState='pending',cloudHold=0,boardGen=0;
+function boardRecords(){return cloudRecords===null?rankings.records:cloudRecords}
+function applyCloud(payload){if(!payload||!Array.isArray(payload.scores))return false;cloudRecords=payload.scores.filter(row=>row&&Number.isFinite(Number(row.score))&&Number(row.score)>=0&&Number(row.score)<=10000000).map(row=>{const player=cleanName(row.name||row.player);return {id:'cloud-'+FruitRanking.nameKey(player),player,score:Math.floor(Number(row.score)+1e-7),date:typeof row.at==='string'?row.at:''}});return true}
+function renderRankings(force=false){const current=engine.started&&!runSaved?{id:runId,player:cleanName($('playerName').value),score:engine.score,live:true}:null;const top=FruitRanking.topScores(boardRecords(),current),stamp=JSON.stringify(top)+'|'+cloudState;if(!force&&stamp===rankingStamp)return;rankingStamp=stamp;const frame=$('scoresFrame');if(frame&&frame.contentWindow)frame.contentWindow.postMessage({type:'fruit-scores',records:top,persistent:rankings.persistent,shared:cloudState==='live'?true:cloudState==='offline'?false:undefined},'*')}
 $('scoresFrame').addEventListener('load',()=>renderRankings(true));
-function saveRun(){if(runSaved||!engine.started||!engine.ended||engine.drops.length)return;runSaved=true;rankings.add({id:runId,player:cleanName($('playerName').value),score:engine.score});renderRankings()}
+function saveRun(){if(runSaved||!engine.started||!engine.ended||engine.drops.length)return;runSaved=true;const player=cleanName($('playerName').value);rankings.add({id:runId,player,score:engine.score});submitScore(player,engine.score);renderRankings(true)}
+function submitScore(player,score){if(typeof fetch!=='function')return;score=Math.floor(Number(score)+1e-7);if(!(score>=0)||score>10000000)return;const gen=++boardGen;cloudHold=performance.now()+2500;if(cloudRecords){cloudRecords=FruitRanking.topScores(cloudRecords,{id:runId||'pending',player,score,date:new Date().toISOString()});cloudState='live';renderRankings(true)}fetch('/api/leaderboard',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({name:player,score})}).then(r=>r.ok?r.json():Promise.reject(r.status)).then(data=>{if(gen!==boardGen)return;if(applyCloud(data))cloudState='live';renderRankings(true);cloudHold=performance.now()+800}).catch(()=>{if(gen===boardGen)cloudHold=performance.now()+800})}
+function refreshBoard(){if(typeof fetch!=='function'||performance.now()<cloudHold)return;const gen=++boardGen;fetch('/api/leaderboard',{headers:{Accept:'application/json'}}).then(r=>r.ok?r.json():Promise.reject(r.status)).then(data=>{if(gen!==boardGen)return;if(applyCloud(data)){cloudState='live';renderRankings(true)}}).catch(()=>{if(gen!==boardGen)return;if(cloudRecords===null)cloudState='offline';renderRankings(true)})}
 
 function message(text){$('message').textContent=text;noticeUntil=performance.now()+4000}
 const engine=new FruitEngine({onEvent(type,data){
@@ -42,7 +46,7 @@ function sync(){
  $('runTime').textContent=formatTime(engine.runTime);$('liveRun').textContent=engine.score.toLocaleString();$('playerName').disabled=false;
  for(const name of ['boost','hammer','bomb']){const b=$(name);b.disabled=engine.ended||engine.paused||engine.charges[name]<=0||(name==='boost'&&engine.boostLeft>0);b.setAttribute('aria-pressed',String(name==='boost'?engine.boostLeft>0:engine.selection===name));$(name+'Count').textContent=name==='boost'&&engine.boostLeft?`${engine.boostLeft} left`:(engine.charges[name]?'1 use':'Used');}
  $('pause').textContent=engine.paused?'Continue':'Ⅱ Pause';canvas.style.cursor=engine.selection?'crosshair':'pointer';
- if(performance.now()>noticeUntil&&!engine.paused&&!engine.ended){$('message').textContent=engine.danger>.3?`Danger! Clear the top · ${(4-engine.danger).toFixed(1)}s`:(engine.selection?'Choose a target · Esc cancels':engine.started?'Match fruit. Stay below the line.':'Drop your first fruit to start the timer.')}
+ if(performance.now()>noticeUntil&&!engine.paused&&!engine.ended){$('message').textContent=engine.danger>.3?`Danger! Clear the top · ${(Math.max(0,engine.dangerLimit-engine.danger)).toFixed(1)}s`:(engine.selection?'Choose a target · Esc cancels':engine.started?'Match fruit. Stay below the line.':'Drop your first fruit to start the timer.')}
 }
 function draw(){
  c.clearRect(0,0,760,843);const sky=c.createLinearGradient(0,0,0,843);sky.addColorStop(0,'#ffce36');sky.addColorStop(.6,'#ffa129');sky.addColorStop(1,'#ffc414');c.fillStyle=sky;c.fillRect(0,0,760,843);
@@ -56,7 +60,7 @@ function draw(){
  path([[91.125,118],[91.125,581],[337,646],[583.75,581],[583.75,118]],'#ff7760',4);
  c.fillStyle='#ffef9420';c.beginPath();c.moveTo(92,151);c.lineTo(582,151);c.lineTo(582,582);c.lineTo(337,647);c.lineTo(92,582);c.closePath();c.fill();
  c.save();c.setLineDash([8,8]);c.strokeStyle=engine.danger>.1?'#df533f':'#ed4931';c.lineWidth=2;c.beginPath();c.moveTo(93,151);c.lineTo(580.25,151);c.stroke();c.restore();
- text(engine.danger>.1?`Danger ${(4-engine.danger).toFixed(1)}s`:'Danger',100.375,141,12,engine.danger>.1?'#ce3e2b':'#ad3d18');
+ text(engine.danger>.1?`Danger ${(Math.max(0,engine.dangerLimit-engine.danger)).toFixed(1)}s`:'Danger',100.375,141,12,engine.danger>.1?'#ce3e2b':'#ad3d18');
  if(engine.danger>.15){c.fillStyle=`rgba(240,92,56,${.035+.045*(1+Math.sin(engine.time*9))})`;c.fillRect(93,153,487.25,75)}
  // Target guide stops at the stack, rather than passing through the fruit.
  const f=FRUITS[engine.current],aim=clamp(engine.aim,BOUNDS.left+f.radius,BOUNDS.right-f.radius);
@@ -110,7 +114,7 @@ const stage=$('gameShell');
 function fullscreenState(){const active=!!document.fullscreenElement||stage.classList.contains('expanded-game');const button=$('fullscreen');button.setAttribute('aria-pressed',String(active));button.setAttribute('aria-label',active?'Exit fullscreen':'Enter fullscreen');button.setAttribute('title',active?'Exit fullscreen':'Enter fullscreen');button.innerHTML='<svg class="action-icon" viewBox="0 0 32 32" aria-hidden="true"><path d="'+(active?'M4 11h7V4m17 7h-7V4M4 21h7v7m17-7h-7v7':'M11 4H4v7m17-7h7v7M4 21v7h7m17-7v7h-7')+'"/></svg>'}
 $('fullscreen').onclick=()=>{const active=stage.classList.contains('expanded-game');stage.classList.toggle('expanded-game');document.body.style.overflow=active?'':'hidden';fullscreenState()};
 document.addEventListener('fullscreenchange',fullscreenState);fullscreenState();
-$('scoresFrame').setAttribute('src',$('scoresFrame').dataset.src);renderRankings(true);sync();requestAnimationFrame(frame);
+$('scoresFrame').setAttribute('src',$('scoresFrame').dataset.src);renderRankings(true);if(typeof fetch==='function'){refreshBoard();if(typeof setInterval==='function')setInterval(()=>{if(!document.hidden)refreshBoard()},15000)}sync();requestAnimationFrame(frame);
 if(window.addEventListener)window.addEventListener('storage',e=>{if(e.key===FruitRanking.KEY){rankings.load();renderRankings(true)}});
 // Debug access is opt-in and omitted in normal play. It uses the real engine and handlers.
 if(new URLSearchParams(location.search).has('test'))window.fruitTest={engine,draw,sync,restart,FRUITS,rankings,saveRun,audio};

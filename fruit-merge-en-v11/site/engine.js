@@ -9,8 +9,9 @@ class FruitEngine{
  constructor({random=Math.random,onEvent=()=>{}}={}){this.random=random;this.onEvent=onEvent;this.reset()}
  reset(){this.bodies=[];this.drops=[];this.effects=[];this.time=0;this.runTime=0;this.started=false;this.score=0;this.merges=0;this.dropCount=0;this.ml=0;this.mix=[255,188,68];this.nextId=1;this.cooldown=0;this.autoClock=0;this.danger=0;this.ended=false;this.paused=false;this.selection=null;this.charges={boost:1,hammer:1,bomb:1};this.boostLeft=0;this.aim=337;this.current=this.pick();this.next=this.pick();this.events={merge:0,collected:0,hammer:0,bomb:0,boost:0};this.onEvent('reset',{})}
  get level(){return Math.min(12,1+Math.floor((this.merges+this.dropCount/3)/10))}
- get interval(){return Math.max(6,15-(this.level-1)*.65)}
- pick(){const t=this.random();const weights=[.06,.12,.19,.24,.165,.1275,.075,.0225];let tier=0,sum=0;for(let i=0;i<weights.length;i++){sum+=weights[i];if(t<sum){tier=i;break}}const pool=FRUITS.filter(f=>f.tier===tier);return pool[Math.floor(this.random()*pool.length)].id}
+ get interval(){return Math.max(8,15-(this.level-1)*.5)}
+ get dangerLimit(){return 5.25}
+ pick(){const t=this.random();const weights=[.08,.14,.20,.24,.16,.10,.06,.02];let tier=0,sum=0;for(let i=0;i<weights.length;i++){sum+=weights[i];if(t<sum){tier=i;break}}const pool=FRUITS.filter(f=>f.tier===tier);return pool[Math.floor(this.random()*pool.length)].id}
  spawn(type,x,y,opts={}){const f=FRUITS[type],r=f.radius,m=r*r*f.density;const b={uid:this.nextId++,type,x:clamp(x,BOUNDS.left+r,BOUNDS.right-r),y,r,m,invM:1/m,I:.5*m*r*r,vx:0,vy:0,angle:(this.random()-.5)*.4,w:0,age:0,lock:.13,squish:0,...opts};this.bodies.push(b);return b}
  drop(x=this.aim){if(this.ended||this.paused||this.cooldown>0||this.selection)return false;this.started=true;const b=this.spawn(this.current,x,BOUNDS.spawnY,{vx:(this.random()-.5)*10,w:(this.random()-.5)*.3});this.current=this.next;this.next=this.pick();this.cooldown=.48;this.autoClock=0;this.dropCount++;this.onEvent('drop',b);return b}
  select(tool){if(this.ended||this.paused)return false;if(tool==='boost'){if(this.charges.boost<=0||this.boostLeft>0)return false;this.charges.boost--;this.boostLeft=3;this.selection=null;this.events.boost++;this.onEvent('boost',{});return true}if(!['hammer','bomb'].includes(tool)||this.charges[tool]<=0)return false;this.selection=this.selection===tool?null:tool;this.onEvent('select',{tool:this.selection});return true}
@@ -41,7 +42,7 @@ class FruitEngine{
   // Project boundaries once more so even a crowded stack stays in the bucket.
   for(const b of this.bodies)this.walls(b);
   const above=this.bodies.some(b=>b.age>1.8&&b.y-b.r<BOUNDS.line);this.danger=above?this.danger+dt:Math.max(0,this.danger-dt*2);
-  if(this.danger>=4){this.ended=true;this.selection=null;this.onEvent('end',{})}
+  if(this.danger>=this.dangerLimit){this.ended=true;this.selection=null;this.onEvent('end',{})}
   this.stepJuice(dt);this.effects.forEach(e=>e.age+=dt);this.effects=this.effects.filter(e=>e.age<.65);
  }
  walls(b){
