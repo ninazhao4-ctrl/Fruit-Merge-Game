@@ -28,6 +28,18 @@ def add_ga4(page):
     return page.replace("<head>", "<head>" + GA4, 1)
 
 
+# Umami Cloud tracker for fruitmergegame.net (website: 水果合成).
+UMAMI_ID = "f4518be1-1fc0-432d-94f1-93539ab075d3"
+UMAMI = '<script defer src="https://cloud.umami.is/script.js" data-website-id="f4518be1-1fc0-432d-94f1-93539ab075d3"></script>'
+
+
+def add_umami(page):
+    """Insert the Umami Cloud snippet once inside the HTML head."""
+    if UMAMI_ID in page:
+        return page
+    return page.replace("<head>", "<head>" + UMAMI, 1)
+
+
 faq = json.loads((ROOT / 'content/faq.en.json').read_text())
 steps = json.loads((ROOT / 'content/howto.en.json').read_text())
 article = (ROOT / 'content/article.en.html').read_text()
@@ -81,8 +93,8 @@ page = (
     .replace('</head>', markup + '</head>')
 )
 
-# Automatically add GA4 to homepage
-page = add_ga4(page)
+# Automatically add GA4 and Umami to homepage
+page = add_umami(add_ga4(page))
 
 children = {
     'fruit-merge-game-strategy': (
@@ -125,6 +137,9 @@ shutil.copytree(
     dirs_exist_ok=True
 )
 
+ranking_page = site / 'rankings' / 'index.html'
+ranking_page.write_text(add_umami(ranking_page.read_text()))
+
 def child_page(title, body, css):
     page_html = (
         '<!doctype html><html lang="en"><head>'
@@ -140,7 +155,7 @@ def child_page(title, body, css):
         '</article></main></body></html>'
     )
 
-    return add_ga4(page_html)
+    return add_umami(add_ga4(page_html))
 
 
 # Build strategy and unblocked pages
@@ -257,5 +272,5 @@ for slug, (title, file) in children.items():
 
 print(
     'Built offline previews, two child pages, and site/ '
-    'with root-relative bidirectional links and GA4 tracking.'
+    'with root-relative bidirectional links, GA4, and Umami Cloud tracking.'
 )
