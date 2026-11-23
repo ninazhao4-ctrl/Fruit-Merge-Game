@@ -1,8 +1,13 @@
 # Fruit Merge Game
 
-Fruit Merge is a free browser game. Drop fruits into the bowl, merge two identical ones into the next fruit along that line, and try to reach the watermelon. Keep the stack below the danger line — fruit that stays above it ends the run.
+A free browser merge game: drop fruits into the bowl, merge matches, and try to reach the watermelon.
 
-Play at [https://fruitmergegame.net/](https://fruitmergegame.net/). The same game is on the [fruit merge unblocked](https://fruitmergegame.net/fruit-merge-game-unblocked/) page, and the [fruit merge strategy](https://fruitmergegame.net/fruit-merge-game-strategy/) page is a short guide to keeping the bowl under control.
+**[Play Fruit Merge online](https://fruitmergegame.net/)**
+
+- [Fruit Merge Unblocked](https://fruitmergegame.net/fruit-merge-game-unblocked/)
+- [Fruit Merge Strategy Guide](https://fruitmergegame.net/fruit-merge-game-strategy/)
+
+Fruit Merge is a free browser game. Drop fruits into the bowl, merge two identical ones into the next fruit along that line, and try to reach the watermelon. Keep the stack below the danger line — fruit that stays above it ends the run.
 
 ![Fruit Merge in the browser: the bowl, the danger line, and a few dropped fruits](docs/gameplay.png)
 
