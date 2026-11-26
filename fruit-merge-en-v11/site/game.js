@@ -5,6 +5,11 @@ const $=id=>document.getElementById(id),canvas=$('canvas'),c=canvas.getContext('
 let best=0;try{best=Number(localStorage.getItem('fruit-merge-best-v2'))||0}catch(_){}
 const {RunStore,formatTime,formatMl,cleanName}=FruitRanking;
 let storage;try{storage=localStorage}catch(_){}const rankings=new RunStore(storage);
+const playerIdentity=FruitRanking.loadPlayerIdentity(storage),playerCode=playerIdentity.code;
+$('playerName').value=playerIdentity.name;
+function currentPlayerName(){const typed=cleanName($('playerName').value,'');if(!typed)return playerCode;FruitRanking.rememberPlayerName(storage,typed);return typed}
+$('playerName').addEventListener('input',()=>{FruitRanking.rememberPlayerName(storage,$('playerName').value)});
+$('playerName').addEventListener('blur',()=>{if(!cleanName($('playerName').value,'')){$('playerName').value=playerCode;FruitRanking.rememberPlayerName(storage,playerCode)}});
 const audio=new FruitAudio(storage);
 let runId='',runSaved=false;
 function updateAudioUI(){for(const k of ['music','sound']){const enabled=k==='music'?(audio.music&&audio.ctx?.state==='running'&&!audio.paused):audio.sfx;const button=$(k);if(button._audioEnabled===enabled)continue;button._audioEnabled=enabled;
@@ -19,9 +24,9 @@ function newRunId(){return Date.now().toString(36)+'-'+Math.random().toString(36
 let rankingStamp='',cloudRecords=null,cloudState='pending',cloudHold=0,boardGen=0;
 function boardRecords(){return cloudRecords===null?rankings.records:cloudRecords}
 function applyCloud(payload){if(!payload||!Array.isArray(payload.scores))return false;cloudRecords=payload.scores.filter(row=>row&&Number.isFinite(Number(row.score))&&Number(row.score)>=0&&Number(row.score)<=10000000).map(row=>{const player=cleanName(row.name||row.player);return {id:'cloud-'+FruitRanking.nameKey(player),player,score:Math.floor(Number(row.score)+1e-7),date:typeof row.at==='string'?row.at:''}});return true}
-function renderRankings(force=false){const current=engine.started&&!runSaved?{id:runId,player:cleanName($('playerName').value),score:engine.score,live:true}:null;const top=FruitRanking.topScores(boardRecords(),current),stamp=JSON.stringify(top)+'|'+cloudState;if(!force&&stamp===rankingStamp)return;rankingStamp=stamp;const frame=$('scoresFrame');if(frame&&frame.contentWindow)frame.contentWindow.postMessage({type:'fruit-scores',records:top,persistent:rankings.persistent,shared:cloudState==='live'?true:cloudState==='offline'?false:undefined},'*')}
+function renderRankings(force=false){const current=engine.started&&!runSaved?{id:runId,player:currentPlayerName(),score:engine.score,live:true}:null;const top=FruitRanking.topScores(boardRecords(),current),stamp=JSON.stringify(top)+'|'+cloudState;if(!force&&stamp===rankingStamp)return;rankingStamp=stamp;const frame=$('scoresFrame');if(frame&&frame.contentWindow)frame.contentWindow.postMessage({type:'fruit-scores',records:top,persistent:rankings.persistent,shared:cloudState==='live'?true:cloudState==='offline'?false:undefined},'*')}
 $('scoresFrame').addEventListener('load',()=>renderRankings(true));
-function saveRun(){if(runSaved||!engine.started||!engine.ended||engine.drops.length)return;runSaved=true;const player=cleanName($('playerName').value);rankings.add({id:runId,player,score:engine.score});submitScore(player,engine.score);renderRankings(true)}
+function saveRun(){if(runSaved||!engine.started||!engine.ended||engine.drops.length)return;runSaved=true;const player=currentPlayerName();rankings.add({id:runId,player,score:engine.score});submitScore(player,engine.score);renderRankings(true)}
 function submitScore(player,score){if(typeof fetch!=='function')return;score=Math.floor(Number(score)+1e-7);if(!(score>=0)||score>10000000)return;const gen=++boardGen;cloudHold=performance.now()+2500;if(cloudRecords){cloudRecords=FruitRanking.topScores(cloudRecords,{id:runId||'pending',player,score,date:new Date().toISOString()});cloudState='live';renderRankings(true)}fetch('/api/leaderboard',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({name:player,score})}).then(r=>r.ok?r.json():Promise.reject(r.status)).then(data=>{if(gen!==boardGen)return;if(applyCloud(data))cloudState='live';renderRankings(true);cloudHold=performance.now()+800}).catch(()=>{if(gen===boardGen)cloudHold=performance.now()+800})}
 function refreshBoard(){if(typeof fetch!=='function'||performance.now()<cloudHold)return;const gen=++boardGen;fetch('/api/leaderboard',{headers:{Accept:'application/json'}}).then(r=>r.ok?r.json():Promise.reject(r.status)).then(data=>{if(gen!==boardGen)return;if(applyCloud(data)){cloudState='live';renderRankings(true)}}).catch(()=>{if(gen!==boardGen)return;if(cloudRecords===null)cloudState='offline';renderRankings(true)})}
 
@@ -103,7 +108,7 @@ function renderGuide(){ $('fruitGuide').replaceChildren();for(let family=0;famil
 renderGuide();
 FruitArt.ready.then(renderGuide);
 function frame(now){const activeDelta=Math.max(0,(now-last)/1000);const elapsed=Math.min(activeDelta,.1);last=now;if(!engine.paused&&!engine.ended){if(engine.started)engine.runTime+=activeDelta;accumulator+=elapsed;while(accumulator>=1/120){engine.step(1/120);accumulator-=1/120}}else {accumulator=0;if(engine.ended&&!runSaved){for(let i=0;i<Math.ceil(elapsed*120);i++)engine.stepJuice(1/120);if(!engine.drops.length){saveRun();showOverlay(true)}}}draw();sync();requestAnimationFrame(frame)}
-const sharing=new FruitShare({document,art:FruitArt,audio,getRun:()=>({player:cleanName($('playerName').value),score:engine.score}),onOpen:()=>{const previous=engine.paused;engine.paused=true;audio.setPaused(true);return ()=>{engine.paused=previous;audio.setPaused(previous);last=performance.now();accumulator=0}}});
+const sharing=new FruitShare({document,art:FruitArt,audio,getRun:()=>({player:currentPlayerName(),score:engine.score}),onOpen:()=>{const previous=engine.paused;engine.paused=true;audio.setPaused(true);return ()=>{engine.paused=previous;audio.setPaused(previous);last=performance.now();accumulator=0}}});
 let settingsWasPaused=false,settingsActive=false;
 function restoreSettings(){if(!settingsActive)return;settingsActive=false;engine.paused=settingsWasPaused;audio.setPaused(settingsWasPaused);last=performance.now();accumulator=0;sync()}
 function closeSettings(){restoreSettings();$('settingsDialog').close()}
@@ -117,5 +122,5 @@ document.addEventListener('fullscreenchange',fullscreenState);fullscreenState();
 $('scoresFrame').setAttribute('src',$('scoresFrame').dataset.src);renderRankings(true);if(typeof fetch==='function'){refreshBoard();if(typeof setInterval==='function')setInterval(()=>{if(!document.hidden)refreshBoard()},15000)}sync();requestAnimationFrame(frame);
 if(window.addEventListener)window.addEventListener('storage',e=>{if(e.key===FruitRanking.KEY){rankings.load();renderRankings(true)}});
 // Debug access is opt-in and omitted in normal play. It uses the real engine and handlers.
-if(new URLSearchParams(location.search).has('test'))window.fruitTest={engine,draw,sync,restart,FRUITS,rankings,saveRun,audio};
+if(new URLSearchParams(location.search).has('test'))window.fruitTest={engine,draw,sync,restart,FRUITS,rankings,saveRun,audio,playerCode,initialName:playerIdentity.name};
 })();
